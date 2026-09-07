@@ -1,14 +1,14 @@
 import mongoose from "mongoose";
-import { DB_NAME } from "../constants.js";
+import { DB_NAME } from "../constants.js"; 
 
 
-// const dns = require('node:dns');
-import dns from 'node:dns';
-dns.setServers(['8.8.8.8', '1.1.1.1']);
+import dns from 'node:dns'
+dns.setServers(['8.8.8.8', '1.1.1.1'])
 
 
 const connectDB = async () => {
          try {
+                  // connectionInstanse variable is holding response of database connections
                   const connectionInstanse = await mongoose.connect(`${process.env.MONGODB_URI}/${DB_NAME}`);
                   console.log(`\n MongoDB connected !! DB HOST : ${connectionInstanse.connection.host}`);
          } catch (error) {
