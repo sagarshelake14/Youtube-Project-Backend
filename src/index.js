@@ -1,14 +1,28 @@
+//this is index.js file it is main file that load first
 //require('dotenv').config({path: './env'})
 import dotenv from 'dotenv'
 import connectDB from "./db/index.js";    // most of case extension is important
+import app from './app.js'
 
 
 dotenv.config({             // configure dotenv
          path: './env'
 });
 
-connectDB()
+connectDB()  // here database is connected but our application is not listening 
+//and server is not start yet
 
+/*
+upar database connection huva hai pr hamare application ne uuse database ka use karte hue listen nahi kara hai isliye 
+*/
+.then(() => {
+         app.listen(process.env.PORT || 8000, () => {
+                  console.log(`Server is running at post ${process.env.PORT}`);
+         })
+})
+.catch((err) => {
+         console.log("MONGO db connection failed  !!!", err);
+})
 
 
 /*
