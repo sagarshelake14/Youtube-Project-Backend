@@ -11,10 +11,12 @@ app.use(cors({                            // cors related configuration
 }));
 
 
-app.use(express.json({limit: "16kb"}));    // json data related configuration
+app.use(express.json({limit: "16kb"}));    // json data related configuration   when data comes in form of json 
+
 
 app.use(express.urlencoded({extended: true, limit: "16kb"}));   //extended: true -> nested object   
 // the data is comes from url so that related configuration are here   
+
 
 app.use(express.static("public"))   
 /* that configuration is related about storing pdf, images, on local server   
