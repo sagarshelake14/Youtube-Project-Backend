@@ -55,7 +55,6 @@ userSchema.pre("save", async function (next)  {    // arrow function is not allo
         // next () is flag that passes to next middleware
          if(!this.isModified("password"))  return next()
 
-
          this.password = bcrypt.hash(this.password, 10); //(field, rounds)
          next();
 });
@@ -67,7 +66,7 @@ userSchema.methods.isPasswordCorrect = async function (password){
 }
 
 
-userSchema.methods.generateAccessToken = function(){          // json web token
+userSchema.methods.generateAccessToken = function(){          // json web token  -> it is creating sessions                                                   it not stores in database
     return jwt.sign(
         {                     // payload
             _id: this._id,
@@ -75,14 +74,14 @@ userSchema.methods.generateAccessToken = function(){          // json web token
             username: this.username,
             fullName: this.fullName
         },
-        process.env.ACCESS_TOKEN_SECRET,    // token
+        process.env.ACCESS_TOKEN_SECRET,    // token         it handles sessions + cookies
         {
             expiresIn: process.env.ACCESS_TOKEN_EXPIRY       // token expiry
         }
     )
 }
 
-userSchema.methods.generateRefreshtoken = function () {    // refresh token
+userSchema.methods.generateRefreshtoken = function () {    // refresh token   it stores in database
         return jwt.sign(        // payload
         {
             _id: this._id,
