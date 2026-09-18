@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import cluster from 'cluster';
-import fs from 'fs'
+import fs from 'fs'   // nodejs file system
 
 
 cloudinary.config({ 
@@ -15,7 +15,7 @@ const uploadOnCloudinary = async (localFilePath) => {
                   if(!localFilePath){
                            return null;
                   }
-                  //upload the file on clodinary
+                  //upload the file on cloudinary
                   const response = await cloudinary.uploader.upload(localFilePath, {
                            resource_type: "auto"   // file type
                   })
@@ -27,5 +27,10 @@ const uploadOnCloudinary = async (localFilePath) => {
                   return null;
          }
 }
+
+
+// cloudinary.uploader
+//   .upload("my_image.jpg")
+//   .then(result=>console.log(result));
 
 export {uploadOnCloudinary}

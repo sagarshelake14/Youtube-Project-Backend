@@ -25,4 +25,19 @@ express.static("public")  -> storing pdf, images in public folder it creating pu
 
 app.use(cookieParser());  // cookieParser related configuration
 
+
+// routes import 
+
+import userRouter from './routes/user.routes.js'
+
+// routes declaration
+
+// app.get("/profile", (req, res) => {
+//          res.send("Welcome to profile")            // Routes + controllers
+// })
+
+app.use("/api/v1/users", userRouter)
+
+// http://localhost:8000/api/v1/users/register
+
 export { app } 

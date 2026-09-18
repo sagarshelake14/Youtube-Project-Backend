@@ -5,7 +5,7 @@ function take that function as argument and execute it
 
 //It is wrapper function by using ***** promises *****
 const asyncHandler = (requestHandler) => {
-         (req, res, next) => {
+         return (req, res, next) => {
                   Promise.resolve(requestHandler(req, res, next)).catch((err) => next(err))
          }
 }
