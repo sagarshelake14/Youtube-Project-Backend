@@ -1,6 +1,6 @@
 import { v2 as cloudinary } from 'cloudinary'
 import cluster from 'cluster';
-import fs from 'fs'   // nodejs file system
+import fs from 'fs'   // nodejs file system  => it used file related operations like update, delete etc
 
 
 cloudinary.config({ 
@@ -8,7 +8,6 @@ cloudinary.config({
   api_key: process.env.CLOUDINARY_API_KEY, 
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
-
 
 const uploadOnCloudinary = async (localFilePath) => {
          try {

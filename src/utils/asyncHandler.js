@@ -10,9 +10,7 @@ const asyncHandler = (requestHandler) => {
          }
 }
 
-         
 export {asyncHandler}
-
 
 
 // it higher order function and higher order function means that function whose take as argument another function
