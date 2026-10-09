@@ -55,7 +55,7 @@ userSchema.pre("save", async function (next)  {    // arrow function is not allo
         // next () is flag that passes to next middleware
          if(!this.isModified("password"))  return next()
 
-         this.password = bcrypt.hash(this.password, 10); //(field, rounds)
+         this.password = await bcrypt.hash(this.password, 10); //(field, rounds)
          next();
 });
 
