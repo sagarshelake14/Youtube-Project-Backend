@@ -6,7 +6,7 @@ import {app} from './app.js'
 
 
 dotenv.config({             // configure dotenv
-         path: './env'
+         path: './.env'
 });
 
 connectDB()  // here database is connected but our application is not listening 

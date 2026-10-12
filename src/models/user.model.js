@@ -1,96 +1,104 @@
-import mongoose, {Schema} from "mongoose";
-import jwt from "jsonwebtoken"    // it is used for refreshtoken
-import bcrypt from "bcrypt"      // it used for hash password
+
+import mongoose, { Schema } from "mongoose";
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 const userSchema = new Schema(
-         {
-                  username: {
-                           type: String,
-                           required: true,
-                           unique: true,
-                           lowercase: true,
-                           trim: true,
-                           index: true,   // it is used for searching think first you want to use
-                  },       // beacause of index username field would be searchable
-                  email: {
-                           type: String,
-                           required: true,
-                           unique: true,
-                           lowercase: true,
-                           trim: true,
-                  },
-                  fullName: {
-                           type: String,
-                           required: true,
-                           trim: true,
-                           index: true,
-                  },
-                  avatar: {
-                           type: String,     // cloudinary Url
-                           required: true,
-                  },
-                  coverImage: {
-                           type: String,     // cloudinary Url
-                  },
-                  watchHistory: [            // watchHistory would be array of objects  
-                           {
-                                    type: Schema.Types.ObjectId,   // watchHistory is depends on video
-                                    ref: "Video"
-                           }
-                  ],
-                  password: {        // standard practice is password stored in the form of encrypted 
-                           type: String,
-                           required: [true, "Passowrd is required"],
-                  },
-                  refreshToken: {
-                           type: String,
-                  }
-         },
-         { timestamps: true }
+  {
+    username: {
+      type: String,
+      required: [true, "Username is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+      index: true,
+    },
+
+    email: {
+      type: String,
+      required: [true, "Email is required"],
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
+
+    fullName: {
+      type: String,
+      required: [true, "Full name is required"],
+      trim: true,
+      index: true,
+    },
+
+    avatar: {
+      type: String,
+      required: [true, "Avatar is required"],
+    },
+
+    coverImage: {
+      type: String,
+      default: "",
+    },
+
+    watchHistory: [
+      {
+        type: Schema.Types.ObjectId,
+        ref: "Video",
+      },
+    ],
+
+    password: {
+      type: String,
+      required: [true, "Password is required"],
+    },
+
+    refreshToken: {
+      type: String,
+    },
+  },
+  {
+    timestamps: true,
+  }
 );
 
-// pre() it is hook used in middleware that execute just  before storing
-userSchema.pre("save", async function (next)  {    // arrow function is not allowed
-        // encryption and decryption are process are time consuming so that we use async await
-        // next () is flag that passes to next middleware
-         if(!this.isModified("password"))  return next()
+// Hash password before saving the user
+userSchema.pre("save", async function () {
+  if (!this.isModified("password")) return;
 
-         this.password = await bcrypt.hash(this.password, 10); //(field, rounds)
-         next();
+  this.password = await bcrypt.hash(this.password, 10);
 });
 
-// custom methods
-// it solve the problem that encrypted passsword stored in database with user 12344 passowrd
-userSchema.methods.isPasswordCorrect = async function (password){  
-        return await bcrypt.compare(password, this.password);
-}
+// Check whether the entered password is correct
+userSchema.methods.isPasswordCorrect = async function (password) {
+  return await bcrypt.compare(password, this.password);
+};
 
+// Generate access token
+userSchema.methods.generateAccessToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+      email: this.email,
+      username: this.username,
+      fullName: this.fullName,
+    },
+    process.env.ACCESS_TOKEN_SECRET,
+    {
+      expiresIn: process.env.ACCESS_TOKEN_EXPIRY,
+    }
+  );
+};
 
-userSchema.methods.generateAccessToken = function(){          // json web token  -> it is creating sessions                                                   it not stores in database
-    return jwt.sign(
-        {                     // payload
-            _id: this._id,
-            email: this.email,
-            username: this.username,
-            fullName: this.fullName
-        },
-        process.env.ACCESS_TOKEN_SECRET,    // token         it handles sessions + cookies
-        {
-            expiresIn: process.env.ACCESS_TOKEN_EXPIRY       // token expiry
-        }
-    )
-}
-
-userSchema.methods.generateRefreshtoken = function () {    // refresh token   it stores in database
-        return jwt.sign(        // payload
-        {
-            _id: this._id,
-        },
-        process.env.REFRESH_TOKEN_SECRET,       // token
-        {
-            expiresIn: process.env.REFRESH_TOKEN_EXPIRY    // token expiry
-        }
-    )
-}    
+// Generate refresh token
+userSchema.methods.generateRefreshToken = function () {
+  return jwt.sign(
+    {
+      _id: this._id,
+    },
+    process.env.REFRESH_TOKEN_SECRET,
+    {
+      expiresIn: process.env.REFRESH_TOKEN_EXPIRY,
+    }
+  );
+};
 
 export const User = mongoose.model("User", userSchema);

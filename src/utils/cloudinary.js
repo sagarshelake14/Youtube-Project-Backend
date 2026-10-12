@@ -1,35 +1,39 @@
-import { v2 as cloudinary } from 'cloudinary'
-import cluster from 'cluster';
-import fs from 'fs'   // nodejs file system  => it used file related operations like update, delete etc
+import { v2 as cloudinary } from "cloudinary";
+import fs from "fs";
 
-
-cloudinary.config({ 
-  cloud_name: process.env.CLOUDINARY_CLOUD_NAME, 
-  api_key: process.env.CLOUDINARY_API_KEY, 
-  api_secret: process.env.CLOUDINARY_API_SECRET
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 const uploadOnCloudinary = async (localFilePath) => {
-         try {
-                  if(!localFilePath){
-                           return null;
-                  }
-                  //upload the file on cloudinary
-                  const response = await cloudinary.uploader.upload(localFilePath, {
-                           resource_type: "auto"   // file type
-                  })
-                  //file has been uploaded successfully
-                  console.log("file is uploaded on cloudinary ", response.url);
-                  return response;
-         } catch (error) {
-                  fs.unlinkSync(localFilePath);    //remove the locally saved temporary file as the upload operation got failed
-                  return null;
-         }
-}
+  try {
+    if (!localFilePath) {
+      console.error("Cloudinary: Local file path is missing");
+      return null;
+    }
 
+    if (!fs.existsSync(localFilePath)) {
+      console.error("Cloudinary: File does not exist:", localFilePath);
+      return null;
+    }
 
-// cloudinary.uploader
-//   .upload("my_image.jpg")
-//   .then(result=>console.log(result));
+    const response = await cloudinary.uploader.upload(localFilePath, {
+      resource_type: "auto",
+    });
 
-export {uploadOnCloudinary}
+    console.log("Cloudinary upload successful:", response.secure_url);
+    //console.log("Cloudinary response :", response);
+    
+    // Delete the temporary file after successful upload
+    fs.unlinkSync(localFilePath);
+
+    return response;
+  } catch (error) {
+    console.error("Cloudinary upload error:", error.message);
+    return null;
+  }
+};
+
+export { uploadOnCloudinary };
