@@ -23,8 +23,8 @@ app.use(express.static("public"))
 express.static("public")  -> storing pdf, images in public folder it creating public assets
 */
 
-app.use(cookieParser());  // cookieParser related configuration
-
+app.use(cookieParser());  // cookieParser related configuration 
+// It provide us res.cookie
 
 
 // routes import 
