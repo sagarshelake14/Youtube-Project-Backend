@@ -384,7 +384,7 @@ const updateUserCoverImage = asyncHandler(async (req, res) => {
 
 
 const getUserChannelProfile = asyncHandler( async (req, res) => {
-    const {username} = req.params
+    const { username } = req.params
 
     if(!username?.trim()){
         throw new ApiError(400, "Username is missing");
@@ -397,7 +397,7 @@ const getUserChannelProfile = asyncHandler( async (req, res) => {
             }
         },
         {
-            $lookup: {
+            $lookup: {  // left join
                 from: "subscriptions",
                 localField: "_id",
                 foreignField: "channel",
@@ -413,9 +413,9 @@ const getUserChannelProfile = asyncHandler( async (req, res) => {
             }
         },
         {
-            $addFields: {
+            $addFields: {   // additional fields will be added
                 subscribersCount: {
-                    $size: "$subscribers"
+                    $size: "$subscribers"   // counts the fields
                 },
                 channelsSubscribedToCount: {    
                     $size: "$subscribedTo"
@@ -430,7 +430,7 @@ const getUserChannelProfile = asyncHandler( async (req, res) => {
             }
         },
         {
-            $project: {
+            $project: {    // selected things will be passed
                 fullname: 1,
                 username: 1,
                 subscribersCount: 1,
